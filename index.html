@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Comercial - Sevilla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-deep: #0a0e14;
+        --bg-card: #141b26;
+        --corporate-blue: #0056b3; 
+        --soft-blue: #3a86ff;
+        --success-green: #22c55e;
+        --text-main: #ffffff;
+        --text-dim: #94a3b8;
+        --border: #2d3748;
+    }
+
+    body {
+        font-family: 'Outfit', sans-serif;
+        background-color: var(--bg-deep);
+        color: var(--text-main);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 1.2fr 2.3fr 1.5fr;
+        gap: 15px;
+        padding: 20px;
+        flex-grow: 1;
+        height: calc(100vh - 40px);
+    }
+
+    .card {
+        background: var(--bg-card);
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        position: relative;
+    }
+
+    .title-section {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--soft-blue);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    /* Estados de éxito */
+    .goal-reached .team-val, .goal-reached .team-name,
+    .goal-reached .big-number, .goal-reached .main-title {
+        color: var(--success-green) !important;
+        -webkit-text-fill-color: var(--success-green) !important;
+    }
+    .goal-reached .progress-fill {
+        background: var(--success-green) !important;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.4) !important;
+    }
+
+    /* Ranking */
+    #ranking-list { overflow-y: auto; }
+    .ranking-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 8px 15px; background: rgba(255,255,255,0.03);
+        border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent;
+    }
+    .ranking-item:nth-child(1) { 
+        background: linear-gradient(90deg, rgba(0, 86, 179, 0.3), rgba(20, 27, 38, 1)); 
+        border: 1px solid var(--corporate-blue);
+    }
+    .name { font-weight: 500; font-size: 0.95rem; color: var(--text-dim); }
+    .val { font-weight: 800; color: var(--text-main); font-size: 1.1rem; }
+
+    /* Centro */
+    .center-card { align-items: center; text-align: center; justify-content: center; }
+    .main-title { font-size: 2.8rem; font-weight: 800; margin: 0; }
+    .big-number { 
+        font-size: 11rem; font-weight: 900; line-height: 0.8; margin: 15px 0;
+        background: linear-gradient(to bottom, #fff, #94a3b8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    
+    .progress-box { width: 90%; margin-top: 10px; }
+    .progress-bg { 
+        background: #0a0e14; height: 20px; border-radius: 10px; 
+        overflow: hidden; margin: 8px 0; border: 1px solid var(--border);
+    }
+    .progress-fill { 
+        background: linear-gradient(90deg, var(--corporate-blue), var(--soft-blue), #60a5fa); 
+        height: 100%; width: 0%; transition: width 1.5s ease-in-out;
+    }
+
+    .goal-display {
+        padding: 8px 25px; background: rgba(58, 134, 255, 0.1);
+        border-radius: 15px; border: 2px dashed var(--soft-blue); display: inline-block;
+    }
+    .goal-value { font-size: 2.4rem; font-weight: 900; color: #fff; margin-left: 10px; }
+
+    /* Equipos lateral */
+    .teams-grid { display: grid; grid-template-columns: 1fr; gap: 8px; overflow-y: auto; }
+    .team-unit { 
+        padding: 12px; 
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px; 
+        border: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .team-name { font-size: 0.8rem; font-weight: 800; color: var(--text-dim); margin-bottom: 0px; }
+    .team-val { font-size: 2.8rem; font-weight: 900; color: var(--text-main); line-height: 1; margin-bottom: 8px; }
+    
+    .team-meta { 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        color: var(--soft-blue); 
+        margin-top: 10px; 
+        text-transform: uppercase;
+    }
+    .team-meta span { color: #fff; font-size: 1.1rem; font-weight: 900; margin-left: 4px; }
+    
+    .small-bar { height: 8px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <!-- Columna Izquierda: Ranking -->
+    <div class="card">
+        <div class="title-section">Ranking Sevilla</div>
+        <div id="ranking-list"></div>
+    </div>
+
+    <!-- Columna Central: Total Sevilla -->
+    <div id="container-total" class="card center-card">
+        <img src="banner Selectra.jpg" alt="Selectra Banner" style="width: 100%; max-height: 400px; margin-bottom: 20px; border-radius: 30px;">
+        <h1 class="main-title">SEVILLA TOTAL</h1>
+        <div class="big-number" id="total-val">0</div>
+        
+        <div class="progress-box">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; font-weight: 800;">
+                <span style="font-size: 0.8rem; color: var(--text-dim);">RENDIMIENTO GLOBAL</span>
+                <span id="percent-total" style="font-size: 1.8rem; color: var(--soft-blue);">0%</span>
+            </div>
+            <div class="progress-bg">
+                <div id="bar-total" class="progress-fill"></div>
+            </div>
+            <div class="goal-display">
+                <span style="color: var(--text-dim); font-weight: 600;">OBJETIVO:</span>
+                <span class="goal-value" id="goal-total">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna Derecha: Equipos (S1 a S5) -->
+    <div class="card">
+        <div class="title-section">Equipos Sevilla</div>
+        <div class="teams-grid">
+            <!-- Sevilla 1 -->
+            <div id="unit-s1" class="team-unit">
+                <span class="team-name">SEVILLA 1</span>
+                <span class="team-val" id="s1-val">0</span>
+                <div class="progress-bg small-bar"><div id="bar-s1" class="progress-fill"></div></div>
+                <div class="team-meta">OBJETIVO: <span id="goal-s1">0</span></div>
+            </div>
+            <!-- Sevilla 2 -->
+            <div id="unit-s2" class="team-unit">
+                <span class="team-name">SEVILLA 2</span>
+                <span class="team-val" id="s2-val">0</span>
+                <div class="progress-bg small-bar"><div id="bar-s2" class="progress-fill"></div></div>
+                <div class="team-meta">OBJETIVO: <span id="goal-s2">0</span></div>
+            </div>
+            <!-- Sevilla 3 -->
+            <div id="unit-s3" class="team-unit">
+                <span class="team-name">SEVILLA 3</span>
+                <span class="team-val" id="s3-val">0</span>
+                <div class="progress-bg small-bar"><div id="bar-s3" class="progress-fill"></div></div>
+                <div class="team-meta">OBJETIVO: <span id="goal-s3">0</span></div>
+            </div>
+            <!-- Sevilla 4 -->
+            <div id="unit-s4" class="team-unit" style="display: none;">
+                <span class="team-name">SEVILLA 4</span>
+                <span class="team-val" id="s4-val">0</span>
+                <div class="progress-bg small-bar"><div id="bar-s4" class="progress-fill"></div></div>
+                <div class="team-meta">OBJETIVO: <span id="goal-s4">0</span></div>
+            </div>
+            <!-- Sevilla 5 -->
+            <div id="unit-s5" class="team-unit style="display: none;">
+                <span class="team-name">SEVILLA 5</span>
+                <span class="team-val" id="s5-val">0</span>
+                <div class="progress-bg small-bar"><div id="bar-s5" class="progress-fill"></div></div>
+                <div class="team-meta">OBJETIVO: <span id="goal-s5">0</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const sheetID = '1f9gKqKefaas0Zpr57IrgZTnAfVZaB1ctF0EhkH3ljl8'; 
+const url = `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=csv&gid=0`;
+
+async function updateDashboard() {
+    try {
+        const response = await fetch(url + '&t=' + new Date().getTime());
+        if (!response.ok) return;
+
+        const csv = await response.text();
+        // Regex para manejar comas dentro de comillas en nombres
+        const rows = csv.split(/\r?\n/).map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
+
+        if (rows.length < 2) return;
+
+        // SUMA DE RANGOS SEVILLA (31 celdas por equipo según tu descripción)
+        const sumRange = (startRow, endRow) => {
+            let total = 0;
+            for (let i = startRow - 1; i <= endRow - 1; i++) {
+                if (rows[i]) {
+                    // La columna B es índice 1, la C es índice 2 (Ventas)
+                    total += parseInt(rows[i][2]) || 0;
+                }
+            }
+            return total;
+        };
+
+        const totalS1 = sumRange(2, 32);    // B2 - B32
+        const totalS2 = sumRange(33, 63);   // B33 - B63
+        const totalS3 = sumRange(64, 94);   // B64 - B94
+        const totalS4 = sumRange(95, 125);  // B95 - B125
+        const totalS5 = sumRange(126, 156); // B126 - B156
+
+        // 1. RANKING (Consideramos hasta la fila 156 que es el final del S5)
+        let comerciales = [];
+        for(let i = 1; i < 156; i++) {
+            if (!rows[i]) continue;
+            let nombre = rows[i][1] ? rows[i][1].replace(/"/g, "").trim() : "";
+            let valor = parseInt(rows[i][2]) || 0;
+            if(nombre !== "" && nombre !== "COMERCIALES") {
+                comerciales.push({ nombre, valor });
+            }
+        }
+        comerciales.sort((a, b) => b.valor - a.valor);
+
+        let rankingHtml = '';
+        comerciales.slice(0, 20).forEach((c, index) => {
+            rankingHtml += `<div class="ranking-item">
+                <span class="name">#${index+1} ${c.nombre}</span>
+                <span class="val">${c.valor}</span>
+            </div>`;
+        });
+        document.getElementById('ranking-list').innerHTML = rankingHtml;
+
+        // 2. SEVILLA TOTAL
+        const globalTotal = totalS1 + totalS2 + totalS3 + totalS4 + totalS5;
+        // Asumiendo que los objetivos de Sevilla están en la columna H (índice 7) 
+        // a partir de la fila 2 para el global, y siguientes para equipos.
+        const globalGoal = parseInt(rows[1][7]) || 1; 
+        
+        document.getElementById('total-val').innerText = globalTotal;
+        document.getElementById('goal-total').innerText = globalGoal;
+        document.getElementById('bar-total').style.width = Math.min((globalTotal/globalGoal)*100, 100) + '%';
+        document.getElementById('percent-total').innerText = Math.round((globalTotal/globalGoal)*100) + '%';
+        
+        if (globalTotal >= globalGoal) document.getElementById('container-total').classList.add('goal-reached');
+        else document.getElementById('container-total').classList.remove('goal-reached');
+
+        // 3. EQUIPOS INDIVIDUALES
+        const updateTeamUI = (id, currentVal, goalRowIdx) => {
+            const goal = parseInt(rows[goalRowIdx][7]) || 1; 
+            document.getElementById(`${id}-val`).innerText = currentVal;
+            document.getElementById(`goal-${id}`).innerText = goal;
+            document.getElementById(`bar-${id}`).style.width = Math.min((currentVal/goal)*100, 100) + '%';
+            
+            if (currentVal >= goal) document.getElementById(`unit-${id}`).classList.add('goal-reached');
+            else document.getElementById(`unit-${id}`).classList.remove('goal-reached');
+        };
+
+        // Asignación de objetivos (puedes ajustar el índice de fila si están en otro sitio)
+        updateTeamUI('s1', totalS1, 2); // Fila 3 -> Objetivo S1
+        updateTeamUI('s2', totalS2, 3); // Fila 4 -> Objetivo S2
+        updateTeamUI('s3', totalS3, 4); // Fila 5 -> Objetivo S3
+        updateTeamUI('s4', totalS4, 5); // Fila 6 -> Objetivo S4
+        updateTeamUI('s5', totalS5, 6); // Fila 7 -> Objetivo S5
+
+    } catch (e) { console.error("Error cargando datos:", e); }
+}
+
+// Actualización cada 3 segundos
+setInterval(updateDashboard, 3000);
+updateDashboard();
+</script>
+</body>
+</html>
